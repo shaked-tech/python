@@ -1,0 +1,10 @@
+Write a function main(sentence) that takes a string as a parameter and 
+returns the longest word in the string. If there are two or more words that 
+are the same length, return the first word from the string with that length. 
+
+Some assumptions you can make:
+- A word can contain any character
+- Words are seperated by whitespace or the punctuation marks ,.;:'"(){}
+- Sentence will not be empty of words - it will have at least one word
+
+for example "Hello world" should return "Hello"

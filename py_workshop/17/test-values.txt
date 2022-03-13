@@ -1,0 +1,1 @@
+("Hello, my name is Omri and my mail in omri.spector@develeap.com, \n though I used to have a hotmail account ospector@altavista.com - but that was years ago.\n My partner is Dori, a.k.a dori.kafri@develeap.com") > ["ospector@altavista.com","dori.kafri@develeap.com","omri.spector@develeap.com"]

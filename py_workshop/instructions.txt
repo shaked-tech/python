@@ -1,0 +1,32 @@
+[0;32mPython Workshop Container
+-------------------------[0m
+In order to use this workshop you need to run the container with your user and a volume for exercises:
+  [1;33mdocker run -d -u `id -u`:`id -g` -v {your-folder}:/user omrispector/py-workshop:2.1[0m
+
+If {your-folder} is empty, python challenges (and several utility scripts) will be copied there
+If not, then we assume you already have them. We never overwrite files on your machine.
+
+Each challenge can be found in a numbered sub-folder with
+(1) a readme with instructions
+(2) a solution.py file for you to use in order to put your answer
+(3) a test-values.txt file for you to enter tests (see below)
+Your mission is to write a good solution and [1;33msubmit[0m it.
+
+In order to help you submit a good solution, you have the ability to easily design and run tests
+test-values.txt file format is:
+(a) one test per line
+(b) Parameters of test in () and follow python syntax
+(c) The character '>'
+(d) Your expected result
+
+From within {your-folder} you can:
+Run your own tests on a challenge with [1;33m./test {subfolder}[0m, e.g. test 1
+Submit your solution with [1;33m./submit {subfolder}[0m
+If you need a hint, ask for it using [1;33m./hint {subfolder}[0m. There is no penalty for hints!
+If you want to see a solution, use [1;33m./showmesolution {subfolder}[0m. Note that submitting after that is not possible.
+To close this container at any time, just execute [1;33m./stop[0m
+To start it again execute [1;33m./start[0m
+
+A copy of these instructions can be found in instructions.txt
+
+Good Luck!

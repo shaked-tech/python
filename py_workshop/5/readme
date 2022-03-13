@@ -1,0 +1,10 @@
+Write the function main(seconds) which accepts any integer number of seconds and returns a string
+which lists the number of hours, minutes and seconds it represents - seperate by a colon(:)
+Note that the return value:
+(1) Will always contain all 3 fields
+(2) minutes and seconds must always be 2-digit
+
+You can safely assume that you will always be passed an integer.
+
+For example: 
+main(3723) will return "1:02:03"

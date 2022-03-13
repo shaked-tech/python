@@ -1,0 +1,26 @@
+=== Generating mail addresses ===
+Write a script that 
+  - accepts a string of comma delimited names 
+  and 
+  - returns a list of tuples, each with the original name and generated e-mail following several rules
+
+For example the list "John doe,Jane McDun" 
+will return [("John doe","john.doe@company.com"), ("Jane McDun", "jane.mcdan@company.com")]
+
+Here are the rules for mail generation:
+(a) Mail is <first-name>.<last-name>. Other parts of name should not be part of mail
+(b) If name contains non-alpha characters (e.g. dan ben-shabat), they should be removed from mail address (e.g. dan.benshabat)
+(c) Domain is company.com
+(d) Mails are lower case
+(e) mails must be unique. If several people get same mail, then the first will get 
+    the original mail and all other people this specific mail will get a counter starting at 2
+    e.g. moshe.cohen2@company.com, moshe.cohen3@company.com etc.
+(f) List must be ordered like the original input
+Note: When returning the list, the name part must be EXACTLY as passed though stripped of enclosing spaces.
+
+Assumptions:
+(1) You can assume that names always have _at_least_ first and last name
+(2) You can assume no special characters in names - just alpha, comma, period, spaces and dashes. 
+
+
+

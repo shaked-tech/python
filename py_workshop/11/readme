@@ -1,0 +1,23 @@
+=== HTTP Results ===
+Imagine that you are working on a system that performs http calls.
+This system nees to log request success/failure from the http calls.
+For each call we know two values: status and description.
+  Examples of statuses: 200, 404, 500 - but there are of course many more
+  Examples of descriptions: "Database failure", "document removed temporarily" - and any other odd thing that developers put in.
+
+To improve logs we want to add the status text.
+
+Your task:
+Implement main(status,description) that will output a dictionary with the following values:
+- "statusCode" - the code you got
+- "statusText" - the standard status text as defined in https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+- "data" - the description you got
+e.g.  {"statusCode":500, "statusText":"Internal Server Error","data":"database timeout"}
+
+Note:
+- You are NOT expected to fetch the status text from mozilla during runtime. The mozilla page is just a reference, but your script can hard code the correct values.
+- if description is not passed then you should put an empty string in the data field
+- if you cannot identify the status then you should put "Undocumented" in the statusText field
+- status is always passed to function
+
+

@@ -1,0 +1,2 @@
+("nomad","and") > True
+("to do is to be","dodo") > False

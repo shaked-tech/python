@@ -1,0 +1,21 @@
+Write main(word,parts) which accepts two strings:
+- a word (composed of only english characters)
+- a comma separated string of 'parts'
+for example: ("hellocat", "apple,bat,cat,goodbye,hello,yellow,why"). 
+
+Your goal is to determine if the word can be split into two parts from the list, and return them.
+
+In this example, the first element can be split into two words: hello and cat 
+because both of those words are in the parts string. 
+Your program should return the two words that exist in the dictionary as an ordered list that 
+can be used to build the word. Order should be according to word, not according to parts!
+In our example: ["hello","cat"]
+
+If there is no way to split string into two words that exist in parts, return an empty list.
+
+You can assume:
+1) both strings are never empty 
+2) list string only contains english characters and commas
+3) word string only contains english characters 
+4) The word will never exist in the list as single part
+5) There will only be one correct way to split the first element of characters into two words.  

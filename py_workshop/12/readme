@@ -1,0 +1,7 @@
+=== Log file stats ===
+In order to track server health we are required to issue a simple report from the server log files, a count of the number responses given of every status.
+Write a program that accepts a logfile name, scans it and returns an ordered (by number) list of response statuses and their count, for example:
+main("example.log") should retrun [(200,2),(404,1),(500,1)]
+
+You can assume:
+- The logfile structure is the same as given in example.log. Use common sense.

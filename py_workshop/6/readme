@@ -1,0 +1,5 @@
+Write a function main(bigstr,smallstr) which accepts two strings and returns:
+- True - if the second can be created by rearanging some/all of the characters in the first, e.g. ("nomad","and")
+- False - if not, e.g. ("to do is to be","dodo")
+
+You can assume that both string will not be empty a and contain ONLY english characters and spaces
