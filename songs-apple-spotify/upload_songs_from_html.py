@@ -2,6 +2,7 @@ import requests
 import json
 import sys
 import re
+import os
 import datetime
 
 try: 
@@ -11,22 +12,29 @@ except ImportError:
 
 def verify_response(response):
     if response.status_code == 401:
-        print(f'Unauthorized response, got: {response}')
+        print(f'Unauthorized response, got: {response.status_code}')
         print(f'verify \'user-id\' is correct and token has the needed permissions')
         exit(1)
-    elif response.status_code != (200 or 201):
-        print(f'errored responce, got: {response}')
+    if ((response.status_code != 201) and (response.status_code != 200)):
+        print(type(response.status_code))
+        print(f'errored response, got: {response.status_code}')
         exit(2)
     else:
         pass
 
 def songs_to_spotify(html_file):
-    r = re.compile(r"[()\'feat.\']")
+    r = re.compile("[|]|(|)|feat.|/|\\\\")
     # CURRENTDATE = datetime.datetime.now().strftime("%m-%Y")
-    HTML_FILE = html_file
-    PLAYLIST_NAME = re.sub(r'-|_', ' ', re.sub('.html', '', HTML_FILE)).title()
+    HTML_FILE_FULL_PATH = html_file
+    HTML_FILE_PATH = os.path.dirname(HTML_FILE_FULL_PATH)
+    HTML_FILE_NAME = os.path.basename(HTML_FILE_FULL_PATH)
+
+    PLAYLIST_NAME = re.sub('.html', '', HTML_FILE_NAME)
+    PLAYLIST_NAME = re.sub(r'-|_', ' ', PLAYLIST_NAME).title()
+
     endpoint_url = "https://api.spotify.com/v1/search"
-    token = "BQCh34MxAEmaY_uBx7-2Cb4fGUUJgu8Cy4XAXl1AZZrXQomZdyAvYJ9AElULNU36MT325S1_dIFzZZTc85apkVR22s9oAbClWowE0GT47ddIIrR8u_Lxqfr62fV6e-Nn_c4dxeTBjY3vNCNxkB3xIZRI8tU1TnSJLNZlLrLwalk4JXKQpjTDzuA4VxX05VotFrCdbw5Te24MXY2ib2vwhUQ9Iiqa6HbGpbukbvyhzkw"
+    # token from: https://developer.spotify.com/console/get-recommendations/
+    token = "BQAj0hW2ifb0Sd_BsWD1CL6gP5OkJDzRN5dyYldYvzTL4v3BRB8iQOFVMrzbLQYPzt7P3oiiTONyiqQ4Dr1Y5y8kERf8CLghc3P5P9iDf5mmUwxTx5AIMVYJvlC7RYyjFI9QZLXiG8IC6zvVv2JL4A_ocp2sGM8ZyDAaXxfFLiSRvt6c4ytm1w8WLQiUHLznv1N6gVyyuKfVHwDsg3EBZrCFQGKyfWn58v2BOxumBjw"
     user_id = "zh5eiddy1j60thppxw5z29ubs"
     uris = [] 
 
@@ -38,19 +46,21 @@ def songs_to_spotify(html_file):
     # seed_artists = '0XNa1vTidXlvJ2gHSsRi4A'
     # seed_tracks='55SfSsxneljXOk5S3NVZIW'
 
-    with open(HTML_FILE) as f:
+    with open(HTML_FILE_FULL_PATH) as f:
         html = f.read()
 
     parsed_html = BeautifulSoup(html, features="html.parser")
 
     ## create a parsed html page: ##
-    # with open(f'parsed-{HTML_FILE}', 'w') as f:
+    # with open(f'{HTML_FILE_NAME_PATH}/parsed-{HTML_FILE_NAME}', 'w') as f:
         # f.write(parsed_html.prettify())
 
     items_list = (parsed_html.find_all('div', attrs={'class':'songs-list-row__song-name'})) #.find_all('span')
     songs_list = [r.sub('', item.text) for item in items_list]
-
+    print(f'{len(songs_list)} songs in {PLAYLIST_NAME}')
+    exit(0)
     # LIST SEARCHED SONGS
+    print("Searching songs:")
     not_found_list = []
     for song in songs_list: 
         # preform query
@@ -74,9 +84,10 @@ def songs_to_spotify(html_file):
 
 
     # CREATE PLAYLIST
+    print(f"Creating playlist {PLAYLIST_NAME}:")
     request_body = json.dumps({
-            "name": "Yuvals Example Playlist",
-            "description": "My first programmatic playlist",
+            "name": f"{PLAYLIST_NAME}",
+            "description": f"Python uploaded {PLAYLIST_NAME}",
             "public": False
             })
     response = requests.post(url = endpoint_url, data = request_body, headers={"Content-Type":"application/json", 
