@@ -32,10 +32,9 @@ def songs_to_spotify(html_file):
     PLAYLIST_NAME = re.sub('.html', '', HTML_FILE_NAME)
     PLAYLIST_NAME = re.sub(r'-|_', ' ', PLAYLIST_NAME).title()
 
-    endpoint_url = "https://api.spotify.com/v1/search"
-    # token from: https://developer.spotify.com/console/get-recommendations/
-    token = "BQAj0hW2ifb0Sd_BsWD1CL6gP5OkJDzRN5dyYldYvzTL4v3BRB8iQOFVMrzbLQYPzt7P3oiiTONyiqQ4Dr1Y5y8kERf8CLghc3P5P9iDf5mmUwxTx5AIMVYJvlC7RYyjFI9QZLXiG8IC6zvVv2JL4A_ocp2sGM8ZyDAaXxfFLiSRvt6c4ytm1w8WLQiUHLznv1N6gVyyuKfVHwDsg3EBZrCFQGKyfWn58v2BOxumBjw"
-    user_id = "zh5eiddy1j60thppxw5z29ubs"
+
+    user_id = ""
+    token = ""
     uris = [] 
 
     # OUR FILTERS
@@ -58,8 +57,24 @@ def songs_to_spotify(html_file):
     items_list = (parsed_html.find_all('div', attrs={'class':'songs-list-row__song-name'})) #.find_all('span')
     songs_list = [r.sub('', item.text) for item in items_list]
     print(f'{len(songs_list)} songs in {PLAYLIST_NAME}')
-    exit(0)
+
+    # CREATE PLAYLIST
+    endpoint_url = f"https://api.spotify.com/v1/users/{user_id}/playlists"
+    print(f"Creating playlist {PLAYLIST_NAME}:")
+    request_body = json.dumps({
+            "name": f"{PLAYLIST_NAME}",
+            "description": f"Python uploaded {PLAYLIST_NAME}",
+            "public": False
+            })
+    response = requests.post(url = endpoint_url, 
+                             data = request_body, 
+                             headers={"Content-Type":"application/json", 
+                                      "Authorization":f"Bearer {token}"})
+    verify_response(response)
+    playlist_id = response.json()['id']
+    
     # LIST SEARCHED SONGS
+    endpoint_url = "https://api.spotify.com/v1/search"
     print("Searching songs:")
     not_found_list = []
     for song in songs_list: 
@@ -80,29 +95,19 @@ def songs_to_spotify(html_file):
                 print(f"\"{j['name']}\" by {j['artists'][0]['name']}")
         except:
             not_found_list += [song]
-    endpoint_url = f"https://api.spotify.com/v1/users/{user_id}/playlists"
-
-
-    # CREATE PLAYLIST
-    print(f"Creating playlist {PLAYLIST_NAME}:")
-    request_body = json.dumps({
-            "name": f"{PLAYLIST_NAME}",
-            "description": f"Python uploaded {PLAYLIST_NAME}",
-            "public": False
-            })
-    response = requests.post(url = endpoint_url, data = request_body, headers={"Content-Type":"application/json", 
-                            "Authorization":f"Bearer {token}"})
-    verify_response(response)
-
-    playlist_id = response.json()['id']
-    endpoint_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
 
     # UPLOAD SONGS TO PLAYLIST
-    request_body = json.dumps({"uris" : uris})
-    response = requests.post(url = endpoint_url, data = request_body, 
-                             headers={"Content-Type":"application/json",
-                                      "Authorization":f"Bearer {token}"})
-    verify_response(response)
+    endpoint_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+
+    # split requests into chunks
+    n = 100
+    uris = [uris[i:i + n] for i in range(0, len(uris), n)]
+    for l in uris:
+        request_body = json.dumps({"uris" : l})
+        response = requests.post(url = endpoint_url, data = request_body, 
+                                headers={"Content-Type":"application/json",
+                                        "Authorization":f"Bearer {token}"})
+        verify_response(response)
 
     print(f'Done, Checkout your new playlist: {PLAYLIST_NAME}')
     print(f'could not find {len(not_found_list)} songs: {not_found_list}')
