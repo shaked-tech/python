@@ -125,7 +125,7 @@ def single_row_per_customer(df):
     df = df.fillna(np.nan).groupby(['Customer_Full_ID_Dll']).first()
     df.drop(columns=['Unnamed: 0', 'Drug_Code', 'Atc5_Code', 'Days', 'Atc_Sum_Per_Day'], inplace=True)
     return df
--
+
 
 if __name__ == "__main__":
     workdir = 'data/'
