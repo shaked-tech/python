@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+N:israel;moshe;israeli;;
+FN:israel moshe israeli
+TEL;TYPE=CELL:+97250 1234567
+item1.EMAIL;TYPE=INTERNET:test@123
+item1.X-ABLabel:
+item2.ORG:MyCompany
+item2.X-ABLabel:
+item3.TITLE:Israel contact
+item3.X-ABLabel:
+CATEGORIES:MyCategory
+END:VCARD
