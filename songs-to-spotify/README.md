@@ -5,6 +5,7 @@ https://console.cloud.google.com/apis/library/youtube.googleapis.com?project={pr
 
 ## Youtube api creadentials json file: 
 ref: https://developers.google.com/people/quickstart/python
+https://www.youtube.com/watch?v=E4lX2lnKsPM
 
 1. go to https://console.cloud.google.com/apis/credentials?project={project}
 2. 'create credentials' --> 'OAuth client ID' --> select 'Desktop app' + enter name --> Create 
@@ -23,3 +24,6 @@ copy and past playlist-page html (using inspect), from apple music into files un
 
 # 4. 
 run python script :)
+
+
+
