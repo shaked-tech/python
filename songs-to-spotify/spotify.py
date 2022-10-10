@@ -1,44 +1,28 @@
 import requests
 import json
-from jsonpath_ng import jsonpath, parse
-import sys
 import re
-import os
-import datetime
-from bs4 import BeautifulSoup
-
+import logging as log
 
 class Spotify:
     def __init__(self, user_id, token):
         self.user_id = user_id
         self.token = token
 
-    def verify_response(response):
+    def verify_response(self, response):
         if response.status_code == 401:
             print(f'Unauthorized response, got: {response.status_code}')
-            print(f'verify \'user-id\' is correct and\'self.token\' has the needed permissions')
+            print(f'verify \'user-id\' is correct and \'self.token\' has the needed permissions')
             exit(1)
-        if ((response.status_code != 201) and (response.status_code != 200)):
-            print(type(response.status_code))
+        elif ((response.status_code != 201) and (response.status_code != 200)):
             print(f'errored response, got: {response.status_code}')
             exit(2)
-        else:
-            pass
+        return
 
 
     # TODO: Update to_spotify function to use info (from 1) instead of html
-    def to_spotify(html_file):
-        r = re.compile("[|]|(|)|feat.|/|\\\\")
-        # CURRENTDATE = datetime.datetime.now().strftime("%m-%Y")
-        HTML_FILE_FULL_PATH = html_file
-        HTML_FILE_PATH = os.path.dirname(HTML_FILE_FULL_PATH)
-        HTML_FILE_NAME = os.path.basename(HTML_FILE_FULL_PATH)
-
-        PLAYLIST_NAME = re.sub('.html', '', HTML_FILE_NAME)
-        PLAYLIST_NAME = re.sub(r'-|_', ' ', PLAYLIST_NAME).title()
-
+    def to_spotify(self, playlist_name, songs_list):
+        RE = re.compile("[|]|(|)|feat.|/|\\\\")
         uris = []
-
         ## FILTERS
         limit=1
         # market="US"
@@ -46,70 +30,65 @@ class Spotify:
         # target_danceability=0.9
         # seed_artists = '0XNa1vTidXlvJ2gHSsRi4A'
         # seed_tracks='55SfSsxneljXOk5S3NVZIW'
-
-        with open(HTML_FILE_FULL_PATH) as f:
-            html = f.read()
-
-        parsed_html = BeautifulSoup(html, features="html.parser")
-
-        ## Beautify html page:
-        # with open(f'{HTML_FILE_NAME_PATH}/parsed-{HTML_FILE_NAME}', 'w') as f:
-            # f.write(parsed_html.prettify())
-
-        items_list = (parsed_html.find_all('div', attrs={'class':'songs-list-row__song-name'})) #.find_all('span')
-        songs_list = [r.sub('', item.text) for item in items_list]
-        print(f'{len(songs_list)} songs in {PLAYLIST_NAME}')
-
+        
         # CREATE PLAYLIST
-        endpoint_url = f"https://api.spotify.com/v1/users/{self.user_id}/playlists"
-        print(f"Creating playlist {PLAYLIST_NAME}:")
+        create_playlist_url = f"https://api.spotify.com/v1/users/{self.user_id}/playlists"
+        print(create_playlist_url)
+        log.info(f"Creating playlist '{playlist_name}':")
         request_body = json.dumps({
-                "name": f"{PLAYLIST_NAME}",
-                "description": f"Python uploaded {PLAYLIST_NAME}",
+                "name": playlist_name,
+                "description": f"Python uploaded {playlist_name}",
                 "public": False
                 })
-        response = requests.post(url = endpoint_url, 
-                                data = request_body, 
-                                headers={"Content-Type":"application/json", 
-                                        "Authorization":f"Bearer {self.token}"})
+        response = requests.post(url = create_playlist_url, 
+                                 data = request_body, 
+                                 headers={"Content-Type":"application/json", 
+                                         "Authorization":f"Bearer {self.token}"})
         self.verify_response(response)
+        log.debug("playlist created")
         playlist_id = response.json()['id']
         
         # LIST SEARCHED SONGS
-        endpoint_url = "https://api.spotify.com/v1/search"
-        print("Searching songs:")
+        search_url = "https://api.spotify.com/v1/search"
         not_found_list = []
+        print("Searching songs:")
         for song in songs_list: 
             # preform query
-            query = f'{endpoint_url}?q={song}&limit={limit}&type=track'
+            query = f'{search_url}?q={song}&limit={limit}&type=track'
 
             # get matched songs
             response = requests.get(query, 
-                        headers={"Content-Type":"application/json", 
-                                    "Authorization":f"Bearer {self.token}"})
+                                    headers={"Content-Type":"application/json", 
+                                             "Authorization":f"Bearer {self.token}"})
 
-            self.verify_response(response)
-            json_response = response.json()
-            try:
-                for i,j in enumerate(json_response['tracks']['items']):
-                    uris.append(j['uri'])
-                    # print('Recommended Song: ', end='')
-                    print(f"\"{j['name']}\" by {j['artists'][0]['name']}")
-            except:
+            response_json = response.json()
+            track_list = response_json.get('tracks')['items'][0]
+            track_uri = track_list['uri']
+            track_name = track_list['name']
+            track_artist = track_list['artists'][0]['name']
+
+            if ((response.status_code != 201) and (response.status_code != 200)):
                 not_found_list += [song]
+                log.info(f"\"{track_name}\" by {track_artist}, Was not found")
+            else:
+                uris.append(track_uri)
+                log.debug(f"\"{track_name}\" by {track_artist}")
 
+        
         # UPLOAD SONGS TO PLAYLIST
-        endpoint_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+        upload_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
 
         # split requests into chunks
         n = 100
         uris = [uris[i:i + n] for i in range(0, len(uris), n)]
         for l in uris:
             request_body = json.dumps({"uris" : l})
-            response = requests.post(url = endpoint_url, data = request_body, 
-                                    headers={"Content-Type":"application/json",
-                                            "Authorization":f"Bearer {self.token}"})
+            response = requests.post(url=upload_url,
+                                     data=request_body, 
+                                     headers={"Content-Type":"application/json",
+                                             "Authorization":f"Bearer {self.token}"})
             self.verify_response(response)
 
-        print(f'Done, Checkout your new playlist: {PLAYLIST_NAME}')
-        print(f'could not find {len(not_found_list)} songs: {not_found_list}')
+        print(f'Done, Added {len(songs_list) - len(not_found_list)} Checkout your new playlist: {playlist_name}')
+        if len(not_found_list) != 0:
+            print(f'Though could not find {len(not_found_list)} songs: {not_found_list}')

@@ -1,4 +1,4 @@
-# Youtube creadentials:
+# Youtube:
 ## Prerequisits:
 #### enable youtube v3 api:
 https://console.cloud.google.com/apis/library/youtube.googleapis.com?project={project id}
@@ -14,16 +14,22 @@ https://www.youtube.com/watch?v=E4lX2lnKsPM
 2. add mail under test users: https://console.cloud.google.com/apis/credentials/consent?project={project id}
 ref: https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification?hl=en#submit-app-for-verification
 
-# Spotify credentials:
-1. login to spotify and past the user id (line 35)
-2. login into: https://developer.spotify.com/console/get-recommendations/
-create a token and past it into the script (line 36)
+# Spotify:
+## Spotify user id:
+1. login to spotify
+2. Getting user id:
+    a. In spotify app or web, click icon on top right
+    b. click 'Account'
+    c. In opened page, under 'Account overview' copy 'Username' string into the sctipt (line 35)  
+## Spotify secret token:
+1. login into: https://developer.spotify.com/console/get-recommendations/
+2. At the bottom of the page click 'GET TOKEN', mark:
+    - playlist-modify-private # For private playlists
+    - playlist-modify-public # For public playlists
+3. copy token in 'OAuth Token' box and past it into the script (line 36)
 
-# 3. 
-copy and past playlist-page html (using inspect), from apple music into files under htmls/
 
-# 4. 
-run python script :)
-
+# Run python script :)
+`python main.py`
 
 
