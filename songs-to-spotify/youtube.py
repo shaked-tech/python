@@ -3,7 +3,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import os
+from os import path
 import logging as log
 
 class Youtube:
@@ -15,7 +15,7 @@ class Youtube:
         api_version = "v3"
         credentials = None
         
-        if os.path.exists('token.json'):
+        if path.exists('token.json'):
             credentials = Credentials.from_authorized_user_file('token.json', SCOPES)
         # If there are no (valid) credentials available, let the user log in.
         if not credentials or not credentials.valid:
@@ -91,34 +91,3 @@ class Youtube:
 
             songs_list = [item['snippet']['title'] for item in items]
             return songs_list
-
-            # response_json = json.loads(json.dumps(response))
-
-            # video_titles_jsonpath_expression = parse('items[*].snippet.title')
-            # video_titles_list = [f"{match.value}" for match in video_titles_jsonpath_expression.find(response_json)]
-            # print(len(video_titles_list))
-
-    # TODO: 
-    # Get list from each playlist - get more than 50: https://www.youtube.com/watch?v=E4lX2lnKsPM
-
-
-
-# def from_youtube(client_secrets_file):
-# youtube - user authorized
-    # scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
-
-    # # Disable OAuthlib's HTTPS verification when running locally.
-    # # *DO NOT* leave this option enabled in production.
-    # os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
-
-    # api_service_name = "youtube"
-    # api_version = "v3"
-
-    # # Get credentials and create an API client
-
-    # request = youtube.playlists().list(
-    #     part="snippet,contentDetails",
-    #     maxResults=25,
-    #     mine=True
-    # )
-
