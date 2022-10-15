@@ -1,1 +1,5 @@
 songs-apple-spotify/*.html
+*.json
+.DS_Store
+__pycache__
+*.pyc
