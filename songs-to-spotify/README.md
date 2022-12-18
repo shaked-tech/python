@@ -9,8 +9,8 @@ https://www.youtube.com/watch?v=E4lX2lnKsPM
 
 ### Credentials file access (Recommended):
 1. go to https://console.cloud.google.com/apis/credentials?project={project}
-2. 'create credentials' --> 'OAuth client ID' --> select 'Desktop app' + enter name --> Create 
-3. update json path 
+2. 'create credentials' --> 'OAuth client ID' --> select 'Desktop app' + enter name --> Create
+3. update json path
 
 ### User authorised access:
 ref: https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification?hl=en#submit-app-for-verification
