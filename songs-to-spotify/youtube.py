@@ -36,7 +36,6 @@ class Youtube:
         )
         log.info(f"Initiated Youtube api succesfully")
 
-
     def get_playlists_ids(self) -> list:
         response = self.youtube_api.playlists().list(
             part="snippet,contentDetails",
@@ -48,21 +47,19 @@ class Youtube:
         ids_list = [item['id'] for item in response.get('items')]
         log.info(f"Found {len(ids_list)} playlists")
         return ids_list
+        
+    def get_playlist_id_name(self, id) -> dict:
+        response = self.youtube_api.playlists().list(
+            part="snippet,contentDetails",
+            maxResults=1,
+            id=id
+        ).execute()
+        if len(response.get('items')) > 1:
+            raise
 
-    def get_playlist_name_by_ids(self, ids):
-        name_list = []
-        for id in ids:
-            response = self.youtube_api.playlists().list(
-                part="snippet,contentDetails",
-                maxResults=1,
-                id=id
-            ).execute()
-
-            if len(response.get('items')) > 1:
-                raise
-            name_list.append({id: response.get('items')[0]['snippet']['title']})
-        return name_list
-
+        log.debug(f"{id}: {response.get('items')[0]['snippet']['title']}")
+        playlist_map = {id: response.get('items')[0]['snippet']['title']}
+        return playlist_map
 
     def get_songs_by_playlist_id(self, id):
         response = self.youtube_api.playlistItems().list(
@@ -70,7 +67,6 @@ class Youtube:
             maxResults=5,
             playlistId=id
         ).execute()
-
         if 1 > response.get('pageInfo').get('totalResults'):
             print("No items found in playlist")
             return
@@ -86,7 +82,6 @@ class Youtube:
                 ).execute()
                 items.extend(response_next_page.get('items'))
                 nextPageToken = response_next_page.get('nextPageToken')
-            
             log.debug(f"found {len(items)} items for playlist {id}")
 
             songs_list = [item['snippet']['title'] for item in items]

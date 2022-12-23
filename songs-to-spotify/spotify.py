@@ -1,6 +1,7 @@
 import requests
 import json
 import logging as log
+from time import sleep 
 
 class Spotify:
     def __init__(self, user_id, token) -> None:
@@ -20,17 +21,6 @@ class Spotify:
                 print(f'errored response, got: {status_code}')
             raise Exception(response.json())
         return True
-
-    def get_user_playlists_ids(self): # required scope: [playlist-read-private, playlist-read-public]
-        playlists_url = f'https://api.spotify.com/v1/users/{self.user_id}/playlists'
-
-        response = requests.get(url = playlists_url, 
-                                headers={"Content-Type":"application/json",
-                                         "Authorization":f"Bearer {self.token}"})
-        self.verify_response(response)
-
-        playlists_ids = [item['id'] for item in response.json()['items']]
-        return playlists_ids
 
     def get_playlist_name_by_id(self, playlist_id): # required scope: [playlist-read-private, playlist-read-public]
         playlist_url = f'https://api.spotify.com/v1/playlists/{playlist_id}'
@@ -53,8 +43,6 @@ class Spotify:
         response_json = response.json()
 
         if response_json['tracks']['total'] == 0:
-            log.info(f"\"{track_name}\", Was not found")
-            self.not_found_list.append(track_name)
             return False
         
         track_list = response_json.get('tracks')['items'][0]
@@ -79,6 +67,17 @@ class Spotify:
         print('You have {} liked tracks.'.format(total))
         return total
 
+    def get_all_user_playlists_ids(self): # required scope: [playlist-read-private, playlist-read-public]
+        playlists_url = f'https://api.spotify.com/v1/users/{self.user_id}/playlists'
+
+        response = requests.get(url = playlists_url, 
+                                headers={"Content-Type":"application/json",
+                                         "Authorization":f"Bearer {self.token}"})
+        self.verify_response(response)
+
+        playlists_ids = [item['id'] for item in response.json()['items']]
+        return playlists_ids
+
     def get_all_liked_tracks(self) -> list : # required scope: [user-library-read]
         total_retrieved = 0
         ids = []
@@ -97,7 +96,7 @@ class Spotify:
                 total_retrieved += 1
         return ids
 
-    def get_all_tracks_ids_in_playlist(self, playlist_id): # required scope: [user-library-read, playlist-read-private, playlist-read-public]
+    def get_all_tracks_ids_in_playlist(self, playlist_id): # required scope: [playlist-read-private, playlist-read-public]
         ids=[]
         get_playlist_url = f'https://api.spotify.com/v1/playlists/{playlist_id}/tracks?limit=100'
         response = requests.get(get_playlist_url, 
@@ -143,7 +142,6 @@ class Spotify:
     def create_playlist(self, playlist_name): # required scope: [user-library-modify]
         create_playlist_url = f"https://api.spotify.com/v1/users/{self.user_id}/playlists"
         print(create_playlist_url)
-        print(f"Creating playlist '{playlist_name}':")
         log.info(f"Creating playlist '{playlist_name}':")
         request_body = json.dumps({
                 "name": playlist_name,
@@ -156,41 +154,41 @@ class Spotify:
                                          "Authorization":f"Bearer {self.token}"})
         self.verify_response(response)
 
-        log.debug("playlist created")
+        print(f"Created playlist '{playlist_name}'")
         playlist_id = response.json()['id']
         return playlist_id
 
-    def upload_tracks_to_playlist(self, playlist_id, tracks_uris_list): # required scope: [user-library-modify]
+    def upload_tracks_to_playlist(self, playlist_id, tracks_uris): # required scope: [user-library-modify]
         upload_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
         # Split requests into chunks
         n = 100
-        uris = [uris[i:i + n] for i in range(0, len(uris), n)]
-        for l in uris:
-            request_body = json.dumps({"uris" : l})
+        uris = [tracks_uris[i:i + n] for i in range(0, len(tracks_uris), n)]
+        log.debug(uris)
+        for chunk in uris:
+            request_body = json.dumps({"uris" : chunk})
             response = requests.post(url=upload_url,
                                      data=request_body, 
                                      headers={"Content-Type":"application/json",
                                              "Authorization":f"Bearer {self.token}"})
             self.verify_response(response)
 
-        playlist_name = self.get_playlist_name_by_id()
-        print(f'Done, Added {len(tracks_uris_list) - len(self.not_found_list)} Checkout your new playlist: {playlist_name}')
-
     def tracks_to_spotify_playlist(self, playlist_name, tracks_list): # required scope: [user-library-modify]
         tracks_uris = []
-
+        dots = ["", ".", "..", "...", "...."]
         # Create Playlist
         playlist_id = self.create_playlist(playlist_name)
-        
         # List Searched Songs
-        print("Searching songs:")
-        for track_name in tracks_list: 
+        for index, track_name in enumerate(tracks_list): 
+            print(f"Searching songs{dots[index%len(dots)]}    ", end='\r')
             track_uri = self.search_for_track_uri_by_name(track_name)
             if track_uri:
                 tracks_uris.append(track_uri)
-            
+            else:
+                log.info(f"\"{track_name}\", Was not found")
+                self.not_found_list.append(track_name)
         # Upload Songs To Playlist
-        self.upload_tracks_to_playlist(playlist_id, tracks_uris)
+        self.upload_tracks_to_playlist(playlist_id, tracks_uris); print(f"Searching songs{dots[-1]}Done"); sleep(1.1)
 
+        print(f"Added {len(tracks_uris) - len(self.not_found_list)} songs. \nCheckout your new Spotify playlist: '{playlist_name}'!")
         if len(self.not_found_list):
             print(f'Though could not find {len(self.not_found_list)} songs: {self.not_found_list}')
