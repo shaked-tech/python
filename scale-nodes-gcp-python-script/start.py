@@ -49,7 +49,7 @@ def main(): ### event , context
     # nodePools = parsed_pubsub_message['nodePools']
     # instance = parsed_pubsub_message['instance']
     action = "start"
-    project = "starfair"
+    project = "example"
     zone = "europe-west1-b"
     cluster = "demo-cluster"
     nodePools = "demo-private-node-pool"

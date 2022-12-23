@@ -1,5 +1,0 @@
-Test 1 is simply here for you to get the hang of things.
-You need to write a function that accepts three numbers 
-a,b and c and returns the result of (a+b)/c.
-For example, passing 2,3 and 4 should return 1.25
-Any errors should return the string "err"

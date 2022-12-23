@@ -1,3 +1,0 @@
-("abcd") > A-Bb-Ccc-Dddd
-("RqaEzty") > R-Qq-Aaa-Eeee-Zzzzz-Tttttt-Yyyyyyy
-("cwt.") > C-Ww-Ttt-....
