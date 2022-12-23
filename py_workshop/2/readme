@@ -1,6 +1,0 @@
-Implement function main(str) that takes the str parameter 
-being passed and returns the string in reversed order. 
-For example: if the input stringis "Hello World and Coders" 
-then your program should return the string "sredoC dna dlroW olleH".
-
-You can assume that caller will always pass a string.

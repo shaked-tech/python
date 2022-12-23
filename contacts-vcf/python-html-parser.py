@@ -1,4 +1,4 @@
-# copy full html from https://www.notion.so/develeap/f0c9665ef9794ba4b00ac4b016903b5d?v=af08063970824fec96ce32c6497e072c
+# copy full html from notion
 # then pass the file to HTML variable
 
 from ast import parse
@@ -34,7 +34,7 @@ for line in lines_list:
     if (to_dict[0] != ""):
         formated_list += [[to_dict[0],to_dict[1],to_dict[2]]]
 
-with open(f'Develeap-contacts-{CURRENTDATE}.vcf', 'w') as f:
+with open(f'example-contacts-{CURRENTDATE}.vcf', 'w') as f:
     for item in formated_list:
         f.write(f"BEGIN:VCARD\n")
         f.write(f"VERSION:3.0\n")
@@ -43,11 +43,11 @@ with open(f'Develeap-contacts-{CURRENTDATE}.vcf', 'w') as f:
         f.write(f"TEL;TYPE=CELL:{item[1].replace('-', '').replace('0', '+972', 1)}\n")
         f.write(f"item1.EMAIL;TYPE=INTERNET:{item[2]}\n")
         f.write(f"item1.X-ABLabel:\n")
-        f.write(f"item2.ORG:Develeap\n")
+        f.write(f"item2.ORG:example\n")
         f.write(f"item2.X-ABLabel:\n")
         f.write(f"item3.TITLE:Devops Engineer\n")
         f.write(f"item3.X-ABLabel:\n")
-        f.write(f"CATEGORIES:Develeap\n")
+        f.write(f"CATEGORIES:example\n")
         f.write(f"END:VCARD\n")
         f.write(f"\n")
 

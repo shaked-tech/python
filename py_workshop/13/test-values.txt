@@ -1,1 +1,0 @@
-('John doe,Jane McDun') > [('John doe', 'john.doe@company.com'), ('Jane McDun', 'jane.mcdun@company.com')]
